@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <div class="page-title">Platform Administration</div>
+    <div class="page-subtitle">
+      Multi-tenant organisation governance
+    </div>
+  </div>
+
+  <!-- IMPORTANT: url_for used -->
+  <a href="{{ url_for('platform_create_org') }}" class="btn btn-primary">
+    + Create Organisation
+  </a>
+</div>
+
+<div class="section">
+  <div class="card">
+    <div class="card-header">Organisations</div>
+    <div class="card-body">
+
+      {% if orgs|length == 0 %}
+        <div class="empty-state">
+          No organisations have been created yet.
+        </div>
+      {% else %}
+        <div class="table-responsive">
+          <table class="table align-middle">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Slug</th>
+                <th>Status</th>
+                <th class="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+
+              {% for o in orgs %}
+              <tr>
+                <td class="fw-semibold">{{ o.name }}</td>
+                <td>{{ o.slug }}</td>
+                <td>
+                  {% if o.is_active %}
+                    <span class="badge bg-success">Active</span>
+                  {% else %}
+                    <span class="badge bg-secondary">Inactive</span>
+                  {% endif %}
+                </td>
+                <td class="text-end">
+
+                  <form method="post"
+                        action="{{ url_for('platform_org_toggle_active', org_id=o.id) }}"
+                        style="display:inline;">
+                    <button type="submit"
+                            class="btn btn-sm {% if o.is_active %}btn-outline-danger{% else %}btn-outline-success{% endif %}">
+                      {% if o.is_active %}Deactivate{% else %}Activate{% endif %}
+                    </button>
+                  </form>
+
+                </td>
+              </tr>
+              {% endfor %}
+
+            </tbody>
+          </table>
+        </div>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}

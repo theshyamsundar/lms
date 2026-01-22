@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-header mb-4 d-flex justify-content-between align-items-center">
+  <div>
+    <h2 class="fw-bold">{{ program.title }}</h2>
+    <div class="text-muted">Finance review & ROI scenarios</div>
+  </div>
+
+  {% if scenarios|length %}
+  <select class="form-select w-auto"
+          onchange="location = this.value">
+    <option value="/finance/program/{{ program.id }}">Expected</option>
+    {% for s in scenarios %}
+      <option value="/finance/program/{{ program.id }}/scenario/{{ s.id }}"
+        {% if active_scenario == s.id %}selected{% endif %}>
+        {{ s.name }}
+      </option>
+    {% endfor %}
+  </select>
+  {% endif %}
+</div>
+
+<!-- ================= KPI STRIP ================= -->
+<div class="row g-4 mb-5">
+
+  <div class="col-md-3">
+    <div class="kpi-premium gradient-green">
+      <div class="kpi-label">Net Benefit</div>
+      <div class="kpi-value">
+        ₹{{ roi.net_benefit | default(0) | round(0) }}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="kpi-premium gradient-blue">
+      <div class="kpi-label">ROI %</div>
+      <div class="kpi-value">
+        {% if roi.roi_pct is number %}
+          {{ roi.roi_pct | round(1) }}%
+        {% else %}
+          —
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="kpi-premium gradient-purple">
+      <div class="kpi-label">BCR</div>
+      <div class="kpi-value">
+        {% if roi.bcr is number %}
+          {{ roi.bcr | round(2) }}
+        {% else %}
+          —
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="kpi-premium gradient-orange">
+      <div class="kpi-label">Payback (Months)</div>
+      <div class="kpi-value">
+        {% if roi.payback_months is number %}
+          {{ roi.payback_months | round(1) }}
+        {% else %}
+          —
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ================= COST REVIEW ================= -->
+<div class="card section">
+  <div class="card-header fw-semibold">Cost Lines</div>
+
+  <table class="table align-middle mb-0">
+    <thead class="table-light">
+      <tr>
+        <th>Description</th>
+        <th>Amount</th>
+        <th>Status</th>
+        <th class="text-end">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in costs %}
+        <tr>
+          <td>{{ c.description }}</td>
+          <td>₹{{ c.amount | round(0) }}</td>
+          <td>
+            <span class="badge
+              {% if c.status == 'APPROVED' %}bg-success
+              {% elif c.status == 'REJECTED' %}bg-danger
+              {% else %}bg-warning text-dark{% endif %}">
+              {{ c.status }}
+            </span>
+          </td>
+          <td class="text-end">
+            {% if c.status == 'PENDING' %}
+              <form method="post"
+                    action="/finance/cost/{{ c.id }}/approve"
+                    class="d-inline">
+                <button class="btn btn-sm btn-success">Approve</button>
+              </form>
+
+              <form method="post"
+                    action="/finance/cost/{{ c.id }}/reject"
+                    class="d-inline ms-2">
+                <button class="btn btn-sm btn-outline-danger">Reject</button>
+              </form>
+            {% else %}
+              —
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="section text-end">
+  <a href="/finance/dashboard" class="btn btn-outline-secondary">
+    ← Back to Finance Dashboard
+  </a>
+</div>
+
+{% endblock %}

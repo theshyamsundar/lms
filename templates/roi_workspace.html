@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- =======================
+     ROI Workspace
+     ======================= -->
+
+<div class="page-header">
+  <div>
+    <div class="page-title">ROI Workspace</div>
+    <div class="page-subtitle">
+      Program cost-benefit analysis and approval workflow
+    </div>
+  </div>
+</div>
+
+<!-- =======================
+     ROI SUMMARY
+     ======================= -->
+<div class="row g-4 section">
+
+  <div class="col-md-3">
+    <div class="card">
+      <div class="card-body kpi-card">
+        <div class="kpi-label">Total Cost</div>
+        <div class="kpi-value">₹ {{ total_cost }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card">
+      <div class="card-body kpi-card">
+        <div class="kpi-label">Total Benefit</div>
+        <div class="kpi-value">₹ {{ total_benefit }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card">
+      <div class="card-body kpi-card">
+        <div class="kpi-label">Net Benefit</div>
+        <div class="kpi-value">₹ {{ net_benefit }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card">
+      <div class="card-body kpi-card">
+        <div class="kpi-label">ROI</div>
+        <div class="kpi-value">
+          {% if roi_available %}
+            {{ roi }}%
+          {% else %}
+            —
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- =======================
+     COST LINES
+     ======================= -->
+<div class="section">
+  <div class="card">
+    <div class="card-header">Cost Breakdown</div>
+    <div class="card-body">
+
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead>
+            <tr>
+              <th>Cost Item</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th class="text-end">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for c in costs %}
+              <tr>
+                <td>{{ c.name }}</td>
+                <td>₹ {{ c.amount }}</td>
+                <td>
+                  {% if c.approved %}
+                    <span class="badge bg-success">Approved</span>
+                  {% else %}
+                    <span class="badge bg-warning text-dark">Draft</span>
+                  {% endif %}
+                </td>
+                <td class="text-end">
+                  {% if not c.approved and can_approve %}
+                    <a href="/roi/cost/{{ c.id }}/approve" class="btn btn-sm btn-outline-primary">
+                      Approve
+                    </a>
+                  {% else %}
+                    —
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- =======================
+     BENEFIT ASSUMPTIONS
+     ======================= -->
+<div class="section">
+  <div class="card">
+    <div class="card-header">Benefit Assumptions</div>
+    <div class="card-body">
+
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead>
+            <tr>
+              <th>Benefit</th>
+              <th>Value</th>
+              <th>Basis</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for b in benefits %}
+              <tr>
+                <td>{{ b.name }}</td>
+                <td>₹ {{ b.value }}</td>
+                <td class="text-muted-small">{{ b.basis }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}

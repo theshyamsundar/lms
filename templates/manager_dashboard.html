@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-header mb-4">
+  <h2 class="fw-bold">Team Learning Dashboard</h2>
+  <div class="text-muted">Course health & learner progress</div>
+</div>
+
+<!-- KPI STRIP -->
+<div class="row g-4 mb-5">
+  <div class="col-md-3">
+    <div class="kpi-premium gradient-blue">
+      <div class="kpi-value">{{ team|length }}</div>
+      <div class="kpi-label">Team Members</div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="kpi-premium gradient-green">
+      <div class="kpi-value">{{ completion_rate }}%</div>
+      <div class="kpi-label">Avg Completion</div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="kpi-premium gradient-purple">
+      <div class="kpi-value">{{ course_health|length }}</div>
+      <div class="kpi-label">Active Courses</div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="kpi-premium gradient-red">
+      <div class="kpi-value">{{ overdue|length }}</div>
+      <div class="kpi-label">At Risk</div>
+    </div>
+  </div>
+</div>
+
+<!-- COURSE HEALTH -->
+<div class="section">
+  <h5 class="mb-3">Course Health</h5>
+
+  <div class="row g-4">
+    {% for c in course_health %}
+      <div class="col-md-4">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <h6 class="fw-semibold">{{ c.course_title }}</h6>
+
+            <div class="progress mb-2" style="height:6px">
+              <div class="progress-bar"
+                   style="width: {{ c.completion_pct }}%"></div>
+            </div>
+
+            <div class="text-muted small mb-3">
+              {{ c.completion_pct }}% · {{ c.learners }} learners
+            </div>
+
+            <a href="/manager/course/{{ c.course_id }}"
+               class="btn btn-sm btn-outline-primary w-100">
+              View Learners →
+            </a>
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <div class="text-muted">No courses found.</div>
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock %}

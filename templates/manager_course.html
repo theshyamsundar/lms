@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-header">
+  <h3>{{ course.title }}</h3>
+  <div class="text-muted">Learners in this course</div>
+</div>
+
+<div class="card">
+  <table class="table align-middle">
+    <thead>
+      <tr>
+        <th>Learner</th>
+        <th>Status</th>
+        <th>Due</th>
+        <th></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for l in learners %}
+        <tr>
+          <td>{{ l.full_name }}</td>
+          <td>
+            {% if l.status == 'COMPLETED' %}
+              <span class="badge bg-success">Completed</span>
+            {% else %}
+              <span class="badge bg-warning text-dark">In Progress</span>
+            {% endif %}
+          </td>
+          <td>{{ l.due_date or "-" }}</td>
+          <td class="text-end d-flex gap-2 justify-content-end">
+            {% if l.status != 'COMPLETED' %}
+            <form method="post" action="/manager/nudge/{{ l.enrollment_id }}">
+              <button class="btn btn-sm btn-warning">Nudge</button>
+            </form>
+            {% endif %}
+            <a href="/manager/learner/{{ l.user_id }}/course/{{ course.id }}"
+               class="btn btn-sm btn-outline-primary">
+              View Progress →
+            </a>
+          </td>
+        </tr>
+      {% else %}
+        <tr>
+          <td colspan="4" class="text-muted text-center">
+            No learners enrolled
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<a href="/manager/dashboard" class="btn btn-link mt-3">← Back</a>
+
+{% endblock %}

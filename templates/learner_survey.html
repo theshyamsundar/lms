@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- =======================
+     Learner Survey
+     ======================= -->
+
+<div class="page-header">
+  <div>
+    <div class="page-title">
+      {{ survey.survey_type | capitalize }} Survey
+    </div>
+    <div class="page-subtitle">
+      Your feedback helps improve learning effectiveness
+    </div>
+  </div>
+</div>
+
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+
+    <div class="card section">
+
+      <div class="card-header">
+        Survey Questions
+      </div>
+
+      <div class="card-body">
+
+        <form method="post">
+
+          {% for q in questions %}
+            <div class="mb-4">
+
+              <!-- Question -->
+              <div class="fw-semibold mb-2">
+                {{ loop.index }}. {{ q.label }}
+              </div>
+
+              <!-- Rating 1–5 -->
+              {% if q.type == 'rating_1_5' %}
+                <div class="d-flex gap-4">
+                  {% for i in range(1, 6) %}
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        name="{{ q.id }}"
+                        id="{{ q.id }}_{{ i }}"
+                        value="{{ i }}"
+                        required
+                      >
+                      <label class="form-check-label" for="{{ q.id }}_{{ i }}">
+                        {{ i }}
+                      </label>
+                    </div>
+                  {% endfor %}
+                </div>
+
+              <!-- Free Text -->
+              {% elif q.type == 'text' %}
+                <textarea
+                  class="form-control"
+                  name="{{ q.id }}"
+                  rows="3"
+                  placeholder="Type your response here..."
+                  required
+                ></textarea>
+              {% endif %}
+
+            </div>
+          {% endfor %}
+
+          <!-- Submit -->
+          <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+
+            <div class="text-muted-small">
+              Estimated time: {{ questions|length }}–{{ questions|length + 2 }} minutes
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+              Submit Survey
+            </button>
+
+          </div>
+
+        </form>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

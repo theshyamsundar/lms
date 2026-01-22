@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- =====================================================
+ LEARNER DASHBOARD
+===================================================== -->
+
+<div class="page-header mb-4">
+  <div>
+    <h2 class="fw-bold">My Learning Dashboard</h2>
+    <div class="text-muted">
+      Track progress, resume courses, and earn achievements
+    </div>
+  </div>
+</div>
+
+<!-- =====================================================
+ KPI STRIP (PREMIUM)
+===================================================== -->
+<div class="row g-4 mb-5">
+
+  <div class="col-md-3">
+    <div class="kpi-premium gradient-blue">
+      <div class="kpi-icon">⭐</div>
+      <div class="kpi-content">
+        <div class="kpi-label">Total Points</div>
+        <div class="kpi-value">{{ points }}</div>
+        <div class="kpi-subtext">Earned so far</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="kpi-premium gradient-green">
+      <div class="kpi-icon">🔥</div>
+      <div class="kpi-content">
+        <div class="kpi-label">Learning Streak</div>
+        <div class="kpi-value">{{ streak }} days</div>
+        <div class="kpi-subtext">Consistency matters</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="kpi-premium gradient-purple">
+      <div class="kpi-icon">📚</div>
+      <div class="kpi-content">
+        <div class="kpi-label">Courses Completed</div>
+        <div class="kpi-value">{{ completed }}/{{ total }}</div>
+        <div class="kpi-subtext">Overall progress</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="kpi-premium gradient-orange">
+      <div class="kpi-icon">📈</div>
+      <div class="kpi-content">
+        <div class="kpi-label">Completion Rate</div>
+        <div class="kpi-value">{{ completion_rate }}%</div>
+        <div class="kpi-subtext">Across all courses</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- =====================================================
+ CONTINUE LEARNING
+===================================================== -->
+<div class="section mb-5">
+  <h5 class="fw-semibold mb-3">Continue Learning</h5>
+
+  {% if in_progress|length == 0 %}
+    <div class="card shadow-sm">
+      <div class="card-body text-center text-muted py-5">
+        🎉 You’re all caught up!  
+        Explore your catalog to start something new.
+      </div>
+    </div>
+  {% else %}
+    <div class="row g-4">
+      {% for t in in_progress %}
+        <div class="col-md-4">
+          <div class="card h-100 shadow-sm border-0">
+            <div class="card-body d-flex flex-column">
+
+              <div class="text-muted small mb-1">
+                {{ t.program_title }}
+              </div>
+
+              <h6 class="fw-semibold mb-2">
+                {{ t.course_title }}
+              </h6>
+
+              <div class="mt-auto">
+                <div class="small text-muted mb-2">
+                  Due: {{ t.due_date or "No deadline" }}
+                </div>
+
+                <a href="/learner/course/{{ t.enrollment_id }}"
+                   class="btn btn-primary btn-sm w-100">
+                  Resume Learning →
+                </a>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
+
+<!-- =====================================================
+ ALL ENROLLED COURSES
+===================================================== -->
+<div class="section">
+  <h5 class="fw-semibold mb-3">All Enrolled Courses</h5>
+
+  <div class="card shadow-sm border-0">
+    <div class="table-responsive">
+      <table class="table align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Program</th>
+            <th>Course</th>
+            <th>Status</th>
+            <th>Due Date</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in all_enrollments %}
+            <tr>
+              <td class="text-muted">{{ t.program_title }}</td>
+              <td class="fw-semibold">{{ t.course_title }}</td>
+              <td>
+                {% if t.status == 'COMPLETED' %}
+                  <span class="badge bg-success">Completed</span>
+                {% else %}
+                  <span class="badge bg-warning text-dark">In Progress</span>
+                {% endif %}
+              </td>
+              <td>{{ t.due_date or "-" }}</td>
+              <td class="text-end">
+                <a href="/learner/course/{{ t.enrollment_id }}"
+                   class="btn btn-sm btn-outline-primary">
+                  Open →
+                </a>
+              </td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="5" class="text-center text-muted py-4">
+                No enrolled courses found.
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

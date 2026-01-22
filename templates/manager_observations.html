@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- =======================
+     Manager Observations
+     ======================= -->
+
+<div class="page-header">
+  <div>
+    <div class="page-title">Behaviour Observations</div>
+    <div class="page-subtitle">
+      Record real-world application of learning by your team
+    </div>
+  </div>
+</div>
+
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+
+    <div class="card section">
+      <div class="card-header">Submit Observation</div>
+      <div class="card-body">
+
+        <form method="post" action="{{ submit_url }}">
+
+          <!-- Learner -->
+          <div class="mb-3">
+            <label class="form-label">Select Learner</label>
+            <select name="learner_id" class="form-select" required>
+              <option value="">Choose a learner</option>
+              {% for l in learners %}
+                <option value="{{ l.id }}">{{ l.email }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- Program -->
+          <div class="mb-3">
+            <label class="form-label">Program</label>
+            <select name="program_id" class="form-select" required>
+              <option value="">Choose a program</option>
+              {% for p in programs %}
+                <option value="{{ p.id }}">{{ p.title }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- Observation -->
+          <div class="mb-3">
+            <label class="form-label">Observation Details</label>
+            <textarea
+              name="observation"
+              class="form-control"
+              rows="4"
+              placeholder="Describe the observed behaviour or application of learning"
+              required
+            ></textarea>
+          </div>
+
+          <!-- Submit -->
+          <div class="d-flex justify-content-end">
+            <button type="submit" class="btn btn-primary">
+              Submit Observation
+            </button>
+          </div>
+
+        </form>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

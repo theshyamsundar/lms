@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-header mb-4">
+  <h2 class="fw-bold">{{ program.title }}</h2>
+  <div class="text-muted">
+    {{ program.description }}
+  </div>
+</div>
+
+<div class="card shadow-sm border-0">
+  <table class="table align-middle mb-0">
+    <thead class="table-light">
+      <tr>
+        <th>Course</th>
+        <th>Status</th>
+        <th>Due Date</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+
+      {% for c in courses %}
+        <tr>
+          <td class="fw-semibold">{{ c.course_title }}</td>
+          <td>
+            {% if c.status == 'COMPLETED' %}
+              <span class="badge bg-success">Completed</span>
+            {% else %}
+              <span class="badge bg-warning text-dark">In Progress</span>
+            {% endif %}
+          </td>
+          <td>{{ c.due_date or "-" }}</td>
+          <td class="text-end">
+            <a href="/learner/course/{{ c.enrollment_id }}"
+               class="btn btn-sm btn-outline-primary">
+              Open →
+            </a>
+          </td>
+        </tr>
+      {% endfor %}
+
+    </tbody>
+  </table>
+</div>
+
+<div class="mt-4">
+  <a href="/learner/programs"
+     class="btn btn-outline-secondary">
+    ← Back to Programs
+  </a>
+</div>
+
+{% endblock %}

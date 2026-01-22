@@ -1,0 +1,246 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- =====================================================
+ L&D ADMIN DASHBOARD
+===================================================== -->
+
+<div class="page-header mb-4">
+  <div>
+    <h2 class="fw-bold">L&D Analytics Dashboard</h2>
+    <div class="text-muted">
+      Monitor learning effectiveness, engagement, and business impact
+    </div>
+  </div>
+</div>
+
+<!-- =====================================================
+ KPI STRIP (PREMIUM)
+===================================================== -->
+<div class="row g-4 mb-5">
+
+  <div class="col-md-3">
+    <div class="kpi-premium gradient-blue">
+      <div class="kpi-icon">🎓</div>
+      <div class="kpi-content">
+        <div class="kpi-label">Active Programs</div>
+        <div class="kpi-value">{{ programs|length }}</div>
+        <div class="kpi-subtext">Currently running</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="kpi-premium gradient-green">
+      <div class="kpi-icon">📈</div>
+      <div class="kpi-content">
+        <div class="kpi-label">Avg Completion</div>
+        <div class="kpi-value">{{ avg_completion }}%</div>
+        <div class="kpi-subtext">Across all programs</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="kpi-premium gradient-purple">
+      <div class="kpi-icon">🧠</div>
+      <div class="kpi-content">
+        <div class="kpi-label">Assessment Lift</div>
+        <div class="kpi-value">{{ avg_learning_lift }}%</div>
+        <div class="kpi-subtext">Pre → Post improvement</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="kpi-premium gradient-orange">
+      <div class="kpi-icon">🔁</div>
+      <div class="kpi-content">
+        <div class="kpi-label">Behaviour Evidence</div>
+        <div class="kpi-value">{{ observation_rate }}%</div>
+        <div class="kpi-subtext">Programs with observations</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- =====================================================
+ PROGRAM EFFECTIVENESS
+===================================================== -->
+<div class="section mb-5">
+  <div class="section-title mb-3">Program Effectiveness</div>
+
+  <div class="row g-4">
+    {% for p in programs %}
+      {% set pct = p.completion_pct or 0 %}
+      {% if pct >= 70 %}
+        {% set tone = "success" %}
+      {% elif pct >= 40 %}
+        {% set tone = "warning" %}
+      {% else %}
+        {% set tone = "danger" %}
+      {% endif %}
+
+      <div class="col-md-4">
+        <div class="card shadow-sm border-0 h-100">
+          <div class="card-body d-flex flex-column">
+
+            <h6 class="fw-semibold mb-1">{{ p.title }}</h6>
+            <div class="text-muted small mb-3">
+              {{ p.learners }} learners · {{ p.courses }} courses
+            </div>
+
+            <div class="progress mb-2" style="height:6px;">
+              <div class="progress-bar bg-{{ tone }}"
+                   style="width: {{ pct }}%"></div>
+            </div>
+
+            <div class="small text-muted mb-3">
+              Completion: {{ pct }}%
+            </div>
+
+            <div class="mt-auto d-flex gap-2">
+              <a href="/ld/program/{{ p.id }}"
+                 class="btn btn-outline-primary btn-sm w-100">
+                View Analytics →
+              </a>
+              <a href="/roi/workspace?program={{ p.id }}"
+                 class="btn btn-outline-secondary btn-sm w-100">
+                ROI →
+              </a>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- =====================================================
+ LEARNING QUALITY SIGNALS
+===================================================== -->
+<div class="row g-4 mb-5">
+
+  <!-- Assessments -->
+  <div class="col-md-6">
+    <div class="card shadow-sm border-0 h-100">
+      <div class="card-header bg-white fw-semibold">
+        Assessment Impact
+      </div>
+      <div class="card-body">
+        <table class="table align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Program</th>
+              <th>Pre Avg</th>
+              <th>Post Avg</th>
+              <th>Lift</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for a in assessment_summary %}
+              <tr>
+                <td>{{ a.program_title }}</td>
+                <td>{{ a.pre_avg }}%</td>
+                <td>{{ a.post_avg }}%</td>
+                <td class="fw-semibold text-success">
+                  +{{ a.lift }}%
+                </td>
+              </tr>
+            {% else %}
+              <tr>
+                <td colspan="4" class="text-center text-muted py-3">
+                  No assessment data available
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Surveys -->
+  <div class="col-md-6">
+    <div class="card shadow-sm border-0 h-100">
+      <div class="card-header bg-white fw-semibold">
+        Learner Feedback (Surveys)
+      </div>
+      <div class="card-body">
+        <table class="table align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Program</th>
+              <th>Reaction</th>
+              <th>Confidence</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for s in survey_summary %}
+              <tr>
+                <td>{{ s.program_title }}</td>
+                <td>{{ s.reaction_avg }}/5</td>
+                <td>{{ s.confidence_avg }}/5</td>
+              </tr>
+            {% else %}
+              <tr>
+                <td colspan="3" class="text-center text-muted py-3">
+                  No survey data available
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- =====================================================
+ TRANSFER TO JOB (BEHAVIOUR)
+===================================================== -->
+<div class="section">
+  <div class="card shadow-sm border-0">
+    <div class="card-header bg-white fw-semibold">
+      Behaviour Observations (Transfer to Job)
+    </div>
+
+    <table class="table align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Program</th>
+          <th>Avg Rating</th>
+          <th>Observations</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for b in behaviour_summary %}
+          <tr>
+            <td>{{ b.program_title }}</td>
+            <td>{{ b.avg_rating }}/5</td>
+            <td>{{ b.count }}</td>
+            <td class="text-end">
+              <a href="/ld/program/{{ b.program_id }}"
+                 class="btn btn-sm btn-outline-primary">
+                View →
+              </a>
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="4" class="text-center text-muted py-3">
+              No behaviour observations recorded yet
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+  </div>
+</div>
+
+{% endblock %}

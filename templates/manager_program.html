@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <div class="page-title">{{ program.title }}</div>
+    <div class="page-subtitle">
+      Learners enrolled and progress overview
+    </div>
+  </div>
+</div>
+
+<div class="card section">
+  <div class="card-header">Learner Progress</div>
+
+  <table class="table align-middle">
+    <thead>
+      <tr>
+        <th>Learner</th>
+        <th>Completion</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for l in learners %}
+        <tr>
+          <td>{{ l.full_name }}</td>
+          <td>{{ l.completion_pct }}%</td>
+          <td>
+            {% if l.completion_pct >= 70 %}
+              <span class="badge bg-success">On Track</span>
+            {% elif l.completion_pct >= 40 %}
+              <span class="badge bg-warning">Needs Attention</span>
+            {% else %}
+              <span class="badge bg-danger">At Risk</span>
+            {% endif %}
+          </td>
+          <td class="text-end">
+            <a href="/manager/learner/{{ l.user_id }}/program/{{ program.id }}"
+               class="btn btn-sm btn-outline-primary">
+              View Progress →
+            </a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

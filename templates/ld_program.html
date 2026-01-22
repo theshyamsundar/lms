@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- =====================================================
+ PROGRAM ANALYTICS
+===================================================== -->
+
+<div class="page-header mb-4">
+  <div>
+    <h2 class="fw-bold">{{ program.title }}</h2>
+    <div class="text-muted">
+      Program effectiveness, learning impact, and behaviour evidence
+    </div>
+  </div>
+</div>
+
+<!-- =====================================================
+ KPI STRIP
+===================================================== -->
+<div class="row g-4 mb-5">
+
+  <div class="col-md-3">
+    <div class="kpi-premium gradient-blue">
+      <div class="kpi-content">
+        <div class="kpi-label">Learners</div>
+        <div class="kpi-value">{{ learners|length }}</div>
+        <div class="kpi-subtext">Enrolled</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="kpi-premium gradient-green">
+      <div class="kpi-content">
+        <div class="kpi-label">Completion</div>
+        <div class="kpi-value">
+          {{ learners | selectattr("completion_pct", "ge", 100) | list | length }}
+        </div>
+        <div class="kpi-subtext">Completed learners</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="kpi-premium gradient-purple">
+      <div class="kpi-content">
+        <div class="kpi-label">Behaviour Rating</div>
+        <div class="kpi-value">{{ behaviour.avg_rating }}/5</div>
+        <div class="kpi-subtext">{{ behaviour.count }} observations</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="kpi-premium gradient-orange">
+      <div class="kpi-content">
+        <div class="kpi-label">Assessments</div>
+        <div class="kpi-value">{{ assessment_stats|length }}</div>
+        <div class="kpi-subtext">Measured</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- =====================================================
+ LEARNER COMPLETION TABLE
+===================================================== -->
+<div class="card section mb-5">
+  <div class="card-header fw-semibold">Learner Completion</div>
+
+  <table class="table align-middle mb-0">
+    <thead class="table-light">
+      <tr>
+        <th>Learner</th>
+        <th>Completion %</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for l in learners %}
+        <tr>
+          <td>{{ l.full_name }}</td>
+          <td>{{ l.completion_pct }}%</td>
+          <td>
+            {% if l.completion_pct >= 70 %}
+              <span class="badge bg-success">On Track</span>
+            {% elif l.completion_pct >= 40 %}
+              <span class="badge bg-warning">Needs Attention</span>
+            {% else %}
+              <span class="badge bg-danger">At Risk</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% else %}
+        <tr>
+          <td colspan="3" class="text-center text-muted py-3">
+            No learner data available
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- =====================================================
+ ASSESSMENT IMPACT
+===================================================== -->
+<div class="card section mb-5">
+  <div class="card-header fw-semibold">Assessment Impact (Pre vs Post)</div>
+
+  <table class="table align-middle mb-0">
+    <thead class="table-light">
+      <tr>
+        <th>Assessment</th>
+        <th>Pre Avg</th>
+        <th>Post Avg</th>
+        <th>Improvement</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for a in assessment_stats %}
+        <tr>
+          <td>{{ a.name }}</td>
+          <td>{{ a.pre_avg if a.pre_avg is not none else "—" }}</td>
+          <td>{{ a.post_avg if a.post_avg is not none else "—" }}</td>
+          <td>
+            {% if a.pre_avg is not none and a.post_avg is not none %}
+              {% set delta = (a.post_avg - a.pre_avg)|round(1) %}
+              {% if delta >= 0 %}
+                <span class="text-success fw-semibold">+{{ delta }}%</span>
+              {% else %}
+                <span class="text-danger fw-semibold">{{ delta }}%</span>
+              {% endif %}
+            {% else %}
+              —
+            {% endif %}
+          </td>
+        </tr>
+      {% else %}
+        <tr>
+          <td colspan="4" class="text-center text-muted py-3">
+            No assessment data available
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- =====================================================
+ SURVEY PARTICIPATION
+===================================================== -->
+<div class="card section mb-5">
+  <div class="card-header fw-semibold">Survey Participation</div>
+
+  <table class="table align-middle mb-0">
+    <thead class="table-light">
+      <tr>
+        <th>Survey Type</th>
+        <th>Responses</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for s in survey_stats %}
+        <tr>
+          <td>{{ s.survey_type }}</td>
+          <td>{{ s.responses }}</td>
+        </tr>
+      {% else %}
+        <tr>
+          <td colspan="2" class="text-center text-muted py-3">
+            No survey data available
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="section text-end">
+  <a href="/ld/dashboard" class="btn btn-outline-secondary">
+    ← Back to L&D Dashboard
+  </a>
+</div>
+
+{% endblock %}

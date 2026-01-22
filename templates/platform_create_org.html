@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <div class="page-title">Create Organisation</div>
+    <div class="page-subtitle">
+      Provision a new tenant on the platform
+    </div>
+  </div>
+</div>
+
+<!-- IMPORTANT: url_for used -->
+<form method="post" action="{{ url_for('platform_create_org') }}">
+
+  <div class="section">
+    <div class="card">
+      <div class="card-header">Organisation Details</div>
+      <div class="card-body">
+
+        <div class="mb-3">
+          <label class="form-label">Organisation Name</label>
+          <input type="text"
+                 class="form-control"
+                 name="org_name"
+                 required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Organisation Slug</label>
+          <input type="text"
+                 class="form-control"
+                 name="org_slug"
+                 required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Admin Email</label>
+          <input type="email"
+                 class="form-control"
+                 name="admin_email"
+                 required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Admin Password</label>
+          <input type="text"
+                 class="form-control"
+                 name="admin_password"
+                 value="Admin123!"
+                 required>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-end mt-4">
+    <a href="{{ url_for('platform_dashboard') }}"
+       class="btn btn-outline-secondary me-2">
+      Cancel
+    </a>
+    <button type="submit" class="btn btn-primary">
+      Create Organisation
+    </button>
+  </div>
+
+</form>
+
+{% endblock %}

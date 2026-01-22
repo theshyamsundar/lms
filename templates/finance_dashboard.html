@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-header mb-4">
+  <h2 class="fw-bold">Finance Dashboard</h2>
+  <div class="text-muted">
+    Review and govern learning investments
+  </div>
+</div>
+
+<!-- KPI STRIP -->
+<div class="row g-4 mb-5">
+
+  <div class="col-md-4">
+    <div class="kpi-premium gradient-green">
+      <div class="kpi-icon">💰</div>
+      <div class="kpi-content">
+        <div class="kpi-label">Approved Spend</div>
+        <div class="kpi-value">₹{{ total_approved | round(0) }}</div>
+        <div class="kpi-subtext">Approved investments</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="kpi-premium gradient-orange">
+      <div class="kpi-icon">⏳</div>
+      <div class="kpi-content">
+        <div class="kpi-label">Pending Approval</div>
+        <div class="kpi-value">₹{{ total_pending | round(0) }}</div>
+        <div class="kpi-subtext">Awaiting review</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="kpi-premium gradient-blue">
+      <div class="kpi-icon">📊</div>
+      <div class="kpi-content">
+        <div class="kpi-label">Programs Tracked</div>
+        <div class="kpi-value">{{ programs_count }}</div>
+        <div class="kpi-subtext">With cost lines</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- PROGRAM LIST -->
+<div class="card shadow-sm border-0">
+  <div class="card-header bg-white fw-semibold">
+    Program Cost Review
+  </div>
+
+  <table class="table align-middle mb-0">
+    <thead class="table-light">
+      <tr>
+        <th>Program</th>
+        <th>Approved</th>
+        <th>Pending</th>
+        <th class="text-end">Review</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in programs %}
+      <tr>
+        <td class="fw-semibold">{{ p.title }}</td>
+        <td>₹{{ p.approved_cost | round(0) }}</td>
+        <td>₹{{ p.pending_cost | round(0) }}</td>
+        <td class="text-end">
+          <a href="/finance/program/{{ p.id }}"
+             class="btn btn-sm btn-outline-primary">
+            Review →
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

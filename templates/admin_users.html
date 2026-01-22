@@ -1,0 +1,287 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- =======================
+     Admin – User Management
+     ======================= -->
+
+<div class="page-header">
+  <div>
+    <div class="page-title">User Management</div>
+    <div class="page-subtitle">
+      Create, update, and manage users across the organisation
+    </div>
+  </div>
+
+  <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createUserModal">
+    + Create User
+  </button>
+</div>
+
+<!-- =======================
+     USERS TABLE
+     ======================= -->
+<div class="section">
+  <div class="card">
+    <div class="card-header">Organisation Users</div>
+    <div class="card-body">
+
+      {% if users|length == 0 %}
+        <div class="empty-state">
+          No users found. Create your first user to get started.
+        </div>
+      {% else %}
+        <div class="table-responsive">
+          <table class="table align-middle">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Department</th>
+                <th>Status</th>
+                <th class="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+
+              {% for u in users %}
+              <tr>
+                <td class="fw-semibold">{{ u.full_name }}</td>
+                <td>{{ u.email }}</td>
+
+                <td>
+                  <span class="badge bg-primary-soft text-primary">
+                    {{ u.role.replace('_',' ') }}
+                  </span>
+                </td>
+
+                <td>{{ u.department or "—" }}</td>
+
+                <td>
+                  {% if u.is_active %}
+                    <span class="badge bg-success">Active</span>
+                  {% else %}
+                    <span class="badge bg-secondary">Inactive</span>
+                  {% endif %}
+                </td>
+
+                <td class="text-end">
+
+                  <!-- Edit -->
+                  <button class="btn btn-sm btn-outline-primary me-1"
+                          data-bs-toggle="modal"
+                          data-bs-target="#editUserModal{{ u.id }}">
+                    Edit
+                  </button>
+
+                  <!-- Activate / Deactivate -->
+                  <form method="post"
+                        action="/admin/users/{{ u.id }}/toggle_active"
+                        style="display:inline;">
+                    <button type="submit"
+                            class="btn btn-sm {% if u.is_active %}btn-outline-danger{% else %}btn-outline-success{% endif %}">
+                      {% if u.is_active %}Deactivate{% else %}Activate{% endif %}
+                    </button>
+                  </form>
+
+                </td>
+              </tr>
+
+              <!-- =======================
+                   EDIT USER MODAL
+                   ======================= -->
+              <div class="modal fade" id="editUserModal{{ u.id }}" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                  <div class="modal-content">
+
+                    <form method="post" action="/admin/users/{{ u.id }}/update">
+
+                      <div class="modal-header">
+                        <h5 class="modal-title">Edit User</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                      </div>
+
+                      <div class="modal-body">
+
+                        <div class="row g-3">
+
+                          <div class="col-md-6">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" class="form-control"
+                                   name="full_name"
+                                   value="{{ u.full_name }}"
+                                   required>
+                          </div>
+
+                          <div class="col-md-6">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control"
+                                   name="email"
+                                   value="{{ u.email }}"
+                                   required>
+                          </div>
+
+                          <div class="col-md-6">
+                            <label class="form-label">Role</label>
+                            <select name="role" class="form-select" required>
+                              {% for r in roles %}
+                                <option value="{{ r }}" {% if r == u.role %}selected{% endif %}>
+                                  {{ r.replace('_',' ') }}
+                                </option>
+                              {% endfor %}
+                            </select>
+                          </div>
+
+                          <div class="col-md-6">
+                            <label class="form-label">Department</label>
+                            <select name="department_id" class="form-select">
+                              <option value="">None</option>
+                              {% for d in depts %}
+                                <option value="{{ d.id }}" {% if d.name == u.department %}selected{% endif %}>
+                                  {{ d.name }}
+                                </option>
+                              {% endfor %}
+                            </select>
+                          </div>
+
+                          <div class="col-md-6">
+                            <label class="form-label">Manager</label>
+                            <select name="manager_id" class="form-select">
+                              <option value="">None</option>
+                              {% for m in managers %}
+                                <option value="{{ m.id }}" {% if m.full_name == u.manager_name %}selected{% endif %}>
+                                  {{ m.full_name }}
+                                </option>
+                              {% endfor %}
+                            </select>
+                          </div>
+
+                          <div class="col-md-6 d-flex align-items-end">
+                            <div class="form-check">
+                              <input class="form-check-input"
+                                     type="checkbox"
+                                     name="active"
+                                     {% if u.is_active %}checked{% endif %}>
+                              <label class="form-check-label">
+                                Active
+                              </label>
+                            </div>
+                          </div>
+
+                        </div>
+
+                      </div>
+
+                      <div class="modal-footer">
+                        <button type="button"
+                                class="btn btn-outline-secondary"
+                                data-bs-dismiss="modal">
+                          Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                          Save Changes
+                        </button>
+                      </div>
+
+                    </form>
+
+                  </div>
+                </div>
+              </div>
+
+              {% endfor %}
+
+            </tbody>
+          </table>
+        </div>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+
+<!-- =======================
+     CREATE USER MODAL
+     ======================= -->
+<div class="modal fade" id="createUserModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+
+      <form method="post" action="/admin/users">
+
+        <div class="modal-header">
+          <h5 class="modal-title">Create New User</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+
+          <div class="row g-3">
+
+            <div class="col-md-6">
+              <label class="form-label">Full Name</label>
+              <input type="text" class="form-control" name="full_name" required>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-control" name="email" required>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Role</label>
+              <select name="role" class="form-select" required>
+                {% for r in roles %}
+                  <option value="{{ r }}">{{ r.replace('_',' ') }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Department</label>
+              <select name="department_id" class="form-select">
+                <option value="">None</option>
+                {% for d in depts %}
+                  <option value="{{ d.id }}">{{ d.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Manager</label>
+              <select name="manager_id" class="form-select">
+                <option value="">None</option>
+                {% for m in managers %}
+                  <option value="{{ m.id }}">{{ m.full_name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Temporary Password</label>
+              <input type="text" class="form-control" name="password" value="Demo123!">
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button"
+                  class="btn btn-outline-secondary"
+                  data-bs-dismiss="modal">
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-primary">
+            Create User
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}

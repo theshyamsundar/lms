@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- =======================
+     Admin – Organisation Settings
+     ======================= -->
+
+<div class="page-header">
+  <div>
+    <div class="page-title">Organisation Settings</div>
+    <div class="page-subtitle">
+      Configure learning policies, gamification rules, and engagement incentives
+    </div>
+  </div>
+</div>
+
+<form method="post" action="/admin/settings">
+
+  <!-- =======================
+       GAMIFICATION POLICIES
+       ======================= -->
+  <div class="section">
+    <div class="card">
+      <div class="card-header">Gamification & Engagement Rules</div>
+      <div class="card-body">
+
+        <div class="alert alert-info">
+          These settings control how learners earn points across the platform.
+          Changes apply immediately to all future learner activity.
+        </div>
+
+        <div class="row g-4">
+
+          <div class="col-md-6">
+            <label class="form-label">
+              Course Completion
+            </label>
+            <input type="number"
+                   class="form-control"
+                   name="course_completion"
+                   value="{{ settings.points.course_completion }}"
+                   min="0">
+            <div class="text-muted-small">
+              Points awarded when a learner marks a course as complete
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">
+              Assessment Submitted
+            </label>
+            <input type="number"
+                   class="form-control"
+                   name="assessment_submitted"
+                   value="{{ settings.points.assessment_submitted }}"
+                   min="0">
+            <div class="text-muted-small">
+              Points awarded for completing a post-course assessment
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">
+              Survey Submitted
+            </label>
+            <input type="number"
+                   class="form-control"
+                   name="survey_submitted"
+                   value="{{ settings.points.survey_submitted }}"
+                   min="0">
+            <div class="text-muted-small">
+              Points awarded for reaction or confidence surveys
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">
+              Manager Observation Submitted
+            </label>
+            <input type="number"
+                   class="form-control"
+                   name="manager_observation_submitted"
+                   value="{{ settings.points.manager_observation_submitted }}"
+                   min="0">
+            <div class="text-muted-small">
+              Points awarded when a manager records a behaviour observation
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">
+              Daily Learning Streak
+            </label>
+            <input type="number"
+                   class="form-control"
+                   name="daily_activity_streak"
+                   value="{{ settings.points.daily_activity_streak }}"
+                   min="0">
+            <div class="text-muted-small">
+              Points awarded per consecutive active learning day
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- =======================
+       POLICY NOTES
+       ======================= -->
+  <div class="section">
+    <div class="card card-muted">
+      <div class="card-body">
+
+        <h6 class="mb-2">Policy Guidance</h6>
+
+        <ul class="text-muted-small mb-0">
+          <li>
+            Keep point values proportional — surveys should not outweigh learning completion.
+          </li>
+          <li>
+            Avoid excessively high streak points to prevent “gaming” the system.
+          </li>
+          <li>
+            Manager observations should carry meaningful weight to reinforce behaviour change.
+          </li>
+          <li>
+            Changes do not retroactively affect historical points already awarded.
+          </li>
+        </ul>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- =======================
+       ACTION BAR
+       ======================= -->
+  <div class="d-flex justify-content-end gap-2 mt-4">
+    <button type="submit" class="btn btn-primary">
+      Save Settings
+    </button>
+  </div>
+
+</form>
+
+{% endblock %}

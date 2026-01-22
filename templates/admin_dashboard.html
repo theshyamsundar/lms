@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- =====================================================
+ ADMIN DASHBOARD
+===================================================== -->
+
+<div class="page-header mb-4">
+  <div>
+    <h2 class="fw-bold">Organisation Admin Dashboard</h2>
+    <div class="text-muted">
+      Organisation overview and administration controls
+    </div>
+  </div>
+</div>
+
+<!-- =====================================================
+ KPI STRIP (PREMIUM – VISIBILITY FIX)
+===================================================== -->
+<div class="row g-4 mb-5">
+
+  <div class="col-md-4">
+    <div class="kpi-premium gradient-blue">
+      <div class="kpi-icon">👥</div>
+      <div class="kpi-content">
+        <div class="kpi-label">Active Users</div>
+        <div class="kpi-value">{{ user_count }}</div>
+        <div class="kpi-subtext">Enabled accounts</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="kpi-premium gradient-purple">
+      <div class="kpi-icon">🏢</div>
+      <div class="kpi-content">
+        <div class="kpi-label">Departments</div>
+        <div class="kpi-value">{{ dept_count }}</div>
+        <div class="kpi-subtext">Across organisation</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="kpi-premium gradient-green">
+      <div class="kpi-icon">⚙️</div>
+      <div class="kpi-content">
+        <div class="kpi-label">System Status</div>
+        <div class="kpi-value">Active</div>
+        <div class="kpi-subtext">All services running</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- =====================================================
+ ADMIN QUICK ACTIONS (UNCHANGED)
+===================================================== -->
+<div class="section">
+  <div class="row g-4">
+
+    <div class="col-md-6">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body">
+          <h6 class="fw-semibold mb-2">User Management</h6>
+          <p class="text-muted small mb-3">
+            Create, update, activate, or deactivate users.
+          </p>
+          <a href="/admin/users" class="btn btn-outline-primary btn-sm">
+            Manage Users →
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body">
+          <h6 class="fw-semibold mb-2">Organisation Settings</h6>
+          <p class="text-muted small mb-3">
+            Configure gamification rules and platform policies.
+          </p>
+          <a href="/admin/settings" class="btn btn-outline-primary btn-sm">
+            Open Settings →
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

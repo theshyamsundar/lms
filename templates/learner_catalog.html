@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- =======================
+     Learner Catalog
+     ======================= -->
+
+<div class="page-header">
+  <div>
+    <div class="page-title">My Courses</div>
+    <div class="page-subtitle">
+      All learning assigned to you across programs
+    </div>
+  </div>
+</div>
+
+<!-- =======================
+     COURSE LIST
+     ======================= -->
+<div class="row g-4">
+
+  {% if items|length == 0 %}
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body text-center text-muted p-5">
+          📚 No courses assigned yet.  
+          Please contact your L&D team if you think this is an error.
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {% for item in items %}
+    <div class="col-md-6 col-lg-4">
+
+      <div class="card h-100 d-flex flex-column">
+
+        <!-- Card Body -->
+        <div class="card-body d-flex flex-column">
+
+          <!-- Program -->
+          <div class="mb-2">
+            <span class="badge bg-primary-soft text-primary">
+              {{ item.program_title }}
+            </span>
+          </div>
+
+          <!-- Course Title -->
+          <h5 class="mb-2">
+            {{ item.title }}
+          </h5>
+
+          <!-- Description -->
+          <p class="text-muted-small mb-3">
+            {{ item.description }}
+          </p>
+
+          <!-- Metadata -->
+          <div class="text-muted-small mb-3">
+            Duration: {{ item.duration_minutes }} minutes
+          </div>
+
+          <!-- Footer -->
+          <div class="mt-auto d-flex justify-content-between align-items-center">
+
+            <!-- Status -->
+            {% if item.status == 'COMPLETED' %}
+              <span class="badge bg-success">Completed</span>
+            {% else %}
+              <span class="badge bg-warning text-dark">Assigned</span>
+            {% endif %}
+
+            <!-- Action -->
+            <a
+              href="/learner/course/{{ item.enrollment_id }}"
+              class="btn btn-sm btn-outline-primary"
+            >
+              {% if item.status == 'COMPLETED' %}
+                View
+              {% else %}
+                Continue
+              {% endif %}
+            </a>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  {% endfor %}
+
+</div>
+
+{% endblock %}

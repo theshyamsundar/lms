@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- =======================
+     Course Detail (Enterprise)
+     ======================= -->
+
+<div class="page-header mb-4">
+  <div>
+    <h2 class="mb-1">{{ enrollment.title }}</h2>
+    <div class="text-muted">
+      {{ enrollment.program_title }} · {{ enrollment.duration_minutes }} mins
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+
+  <!-- =======================
+       MAIN CONTENT
+       ======================= -->
+  <div class="col-lg-8">
+
+    <!-- Overview -->
+    <div class="card mb-4">
+      <div class="card-header">Course Overview</div>
+      <div class="card-body">
+        {{ enrollment.description }}
+      </div>
+    </div>
+
+    <!-- =======================
+         LECTURES
+         ======================= -->
+    <div class="card">
+      <div class="card-header d-flex justify-content-between">
+        <span>Course Content</span>
+        <button class="btn btn-sm btn-outline-primary" onclick="resumeLearning()">
+          Resume Learning
+        </button>
+      </div>
+
+      <div class="card-body p-0">
+        <ul class="list-group list-group-flush" id="lectureList">
+
+          {% set lectures = [
+            ("🎥 Introduction to Consultative Selling", "Video · 8 mins", true),
+            ("📘 Understanding Customer Pain Points", "Reading · 12 mins", false),
+            ("🎥 Discovery Questions that Work", "Video · 15 mins", true),
+            ("🧪 Knowledge Check: Discovery Skills", "Quiz · 10 mins", false),
+            ("🎥 Handling Objections Confidently", "Video · 18 mins", true)
+          ] %}
+
+          {% for lecture in lectures %}
+          <li class="list-group-item lecture-item"
+              data-lecture="{{ loop.index0 }}"
+              {% if lecture[2] %}onclick="openVideoModal('{{ lecture[0] }}')" {% endif %}>
+            <div class="d-flex gap-3 align-items-start">
+              <input type="checkbox"
+                     class="form-check-input lecture-check mt-1"
+                     data-lecture="{{ loop.index0 }}">
+              <div>
+                <div class="fw-semibold">{{ lecture[0] }}</div>
+                <div class="text-muted small">{{ lecture[1] }}</div>
+              </div>
+            </div>
+          </li>
+          {% endfor %}
+
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- =======================
+       SIDE PANEL
+       ======================= -->
+  <div class="col-lg-4">
+
+    <!-- Progress -->
+    <div class="card mb-4">
+      <div class="card-header">Your Progress</div>
+      <div class="card-body">
+
+        <div class="mb-2 text-muted small">
+          <span id="progressText">0%</span> completed
+        </div>
+
+        <div class="progress mb-3" style="height:8px;">
+          <div class="progress-bar" id="progressBar" style="width:0%;"></div>
+        </div>
+
+        <form method="post"
+              action="/learner/course/{{ enrollment.id }}/complete"
+              id="completeForm"
+              style="display:none;">
+          <button class="btn btn-success w-100">
+            🎉 Course Completed
+          </button>
+        </form>
+
+      </div>
+    </div>
+
+    <!-- Certificate -->
+    <div class="card mb-4" id="certificateCard" style="display:none;">
+      <div class="card-header">Your Certificate</div>
+      <div class="card-body text-center">
+        <div class="display-6">🏆</div>
+        <div class="fw-semibold mt-2">
+          Certificate of Completion
+        </div>
+        <div class="text-muted small mb-3">
+          {{ enrollment.title }}
+        </div>
+        <button class="btn btn-outline-primary btn-sm">
+          Download Certificate (PDF)
+        </button>
+      </div>
+    </div>
+
+    <!-- Skills -->
+    <div class="card">
+      <div class="card-header">Skills Earned</div>
+      <div class="card-body">
+        <div class="d-flex flex-wrap gap-2">
+          <span class="badge bg-primary-soft text-primary">Consultative Selling</span>
+          <span class="badge bg-primary-soft text-primary">Customer Discovery</span>
+          <span class="badge bg-primary-soft text-primary">Objection Handling</span>
+          <span class="badge bg-primary-soft text-primary">Sales Communication</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- =======================
+     Video Modal
+     ======================= -->
+<div class="modal fade" id="videoModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="videoTitle"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body text-center">
+        <div class="ratio ratio-16x9 bg-dark">
+          <div class="d-flex align-items-center justify-content-center text-white">
+            ▶ Video Player Placeholder
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =======================
+     Progress Logic
+     ======================= -->
+<script>
+const key = "course_progress_{{ enrollment.course_id }}";
+const checks = document.querySelectorAll(".lecture-check");
+const items = document.querySelectorAll(".lecture-item");
+const bar = document.getElementById("progressBar");
+const text = document.getElementById("progressText");
+const form = document.getElementById("completeForm");
+const cert = document.getElementById("certificateCard");
+
+let progress = JSON.parse(localStorage.getItem(key) || "[]");
+
+checks.forEach(cb => {
+  const i = Number(cb.dataset.lecture);
+  if (progress.includes(i)) {
+    cb.checked = true;
+    items[i].classList.add("bg-light");
+  }
+});
+
+updateProgress();
+
+checks.forEach(cb => {
+  cb.addEventListener("change", () => {
+    const i = Number(cb.dataset.lecture);
+    if (cb.checked && !progress.includes(i)) progress.push(i);
+    if (!cb.checked) progress = progress.filter(x => x !== i);
+    localStorage.setItem(key, JSON.stringify(progress));
+    updateProgress();
+    highlight(i);
+  });
+});
+
+function updateProgress() {
+  const pct = Math.round((progress.length / checks.length) * 100);
+  bar.style.width = pct + "%";
+  text.innerText = pct + "%";
+
+  if (pct === 100) {
+    form.style.display = "block";
+    cert.style.display = "block";
+  }
+}
+
+function resumeLearning() {
+  if (progress.length) {
+    const i = progress[progress.length - 1];
+    items[i].scrollIntoView({behavior:"smooth", block:"center"});
+    highlight(i);
+  }
+}
+
+function highlight(i) {
+  items.forEach(x => x.classList.remove("bg-light"));
+  items[i].classList.add("bg-light");
+}
+
+function openVideoModal(title) {
+  document.getElementById("videoTitle").innerText = title;
+  new bootstrap.Modal(document.getElementById("videoModal")).show();
+}
+
+document.addEventListener("DOMContentLoaded", resumeLearning);
+</script>
+
+{% endblock %}

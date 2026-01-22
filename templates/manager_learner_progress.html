@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-header">
+  <h3>{{ learner.full_name }}</h3>
+  <div class="text-muted">Course progress</div>
+</div>
+
+<div class="card">
+  <table class="table">
+    <tr><th>Status</th><td>{{ enrollment.status }}</td></tr>
+    <tr><th>Due Date</th><td>{{ enrollment.due_date or "-" }}</td></tr>
+    <tr><th>Completed At</th><td>{{ enrollment.completed_at or "-" }}</td></tr>
+  </table>
+</div>
+
+<a href="/manager/course/{{ course.id }}" class="btn btn-link mt-3">← Back</a>
+
+{% endblock %}
